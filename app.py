@@ -7,7 +7,7 @@ st.write("Fetching live data from Dhan API...")
 
 # PASTE YOUR KEYS BETWEEN THE QUOTES
 CLIENT_ID = "1100513955"
-ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzc4ODE2MzQwLCJpYXQiOjE3Nzg3Mjk5NDAsInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTAwNTEzOTU1In0.snVapdkFsnefdng8tjc3e8eUtRggm0eyJsj60eZyQj6rkal7ZN7RIgJVwuDXxM-tYzt2GFG6QvOuFWjidngK1w"
+ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzc4ODQwMjE4LCJpYXQiOjE3Nzg3NTM4MTgsInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTAwNTEzOTU1In0.TPkPSA880q6Pu0IG9nHQ9bDzav_30ixNlX1t2-x7PDUFUntiEHn6NiOdBRtxKIPkWBFc82_Obf0sBbXdzJPa7A"
 
 def get_stock_data():
     # 1. Notice the 'v2' added to the URL here
