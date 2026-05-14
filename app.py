@@ -31,24 +31,16 @@ def get_stock_data():
         return {"error": "API Error", "details": response.text}
 
 # --- 3. THE FACE (The Button and Table) ---
+# --- 3. THE FACE & THE SCREENER ---
 if st.button('Refresh Prices'):
     result = get_stock_data()
     
     if "error" in result:
         st.error("Connection Error. Check your Token!")
-        st.write(result["details"])
     else:
-        # Digging out the prices
         raw_data = result['data']['NSE_EQ']
+        names = {"1333": "HDFC Bank", "11536": "TCS", "2885": "Reliance"}
         
-        # Nicknames for the IDs
-        names = {
-            "1333": "HDFC Bank",
-            "11536": "TCS",
-            "2885": "Reliance"
-        }
-        
-        # Building the list for our table
         rows = []
         for stock_id, details in raw_data.items():
             rows.append({
@@ -56,7 +48,20 @@ if st.button('Refresh Prices'):
                 "Last Price": details['last_price']
             })
         
-        # Putting it into a pretty table
+        # We put our data into the Pandas "Excel" table
         df = pd.DataFrame(rows)
-        st.success("Screener Updated!")
-        st.table(df)
+        
+        # --- NEW SCANNER FEATURE ---
+        st.subheader("🔍 My Custom Screener")
+        
+        # 1. We create a slider on the website
+        # It goes from 0 to 4000, and starts at 0.
+        min_price = st.slider("Only show stocks with a price HIGHER than:", 0, 4000, 0)
+        
+        # 2. THE FILTER (This is what ScanX does!)
+        # We tell the table to only keep rows where the price is bigger than our slider
+        filtered_df = df[df['Last Price'] >= min_price]
+        
+        # 3. We show the results
+        st.success(f"Found {len(filtered_df)} stocks matching your scan!")
+        st.table(filtered_df)
