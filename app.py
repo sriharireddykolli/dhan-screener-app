@@ -10,34 +10,35 @@ CLIENT_ID = "1100513955"
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzc4ODQwMjE4LCJpYXQiOjE3Nzg3NTM4MTgsInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTAwNTEzOTU1In0.TPkPSA880q6Pu0IG9nHQ9bDzav_30ixNlX1t2-x7PDUFUntiEHn6NiOdBRtxKIPkWBFc82_Obf0sBbXdzJPa7A"
 
 def get_stock_data():
-    url = "https://api.dhan.co/v2/marketfeed/ltp"
+    if st.button('Refresh Prices'):
+    result = get_stock_data()
     
-    # 2. THE HEADERS ARE FIXED (Do not change anything in this box!)
-    headers = {
-        "access-token": ACCESS_TOKEN,
-        "client-id": CLIENT_ID,
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    }
-    
-    payload = {
-        "NSE_EQ": [1333, 11536, 2885] 
-    } 
-    
-    response = requests.post(url, json=payload, headers=headers)
-    
-    if response.status_code == 200:
-        return response.json()
+    if "error" in result:
+        st.error("Connection Error")
+        st.write(result["details"])
     else:
-        return {"error": f"Dhan API Error (Status {response.status_code})", "details": response.text}
-
-if st.button('Refresh Prices'):
-    data = get_stock_data()
-    
-    if "error" in data:
-        st.error("Oops! Something went wrong with the connection to Dhan:")
-        st.write(data["error"])
-        st.write(data["details"])
-    else:
-        st.success("Data fetched successfully!")
-        st.json(data)
+        # 1. We dig into the data to find the prices
+        raw_data = result['data']['NSE_EQ']
+        
+        # 2. We create a 'Nickname' list so we know which ID belongs to which company
+        names = {
+            "1333": "HDFC Bank",
+            "11536": "TCS",
+            "2885": "Reliance"
+        }
+        
+        # 3. We organize the data into a clean list
+        rows = []
+        for stock_id, details in raw_data.items():
+            rows.append({
+                "Stock Name": names.get(stock_id, stock_id),
+                "Last Price": details['last_price']
+            })
+        
+        # 4. We turn that list into a beautiful table
+        df = pd.DataFrame(rows)
+        
+        st.success("Screener Updated!")
+        
+        # This makes the table look clean and professional
+        st.table(df)
