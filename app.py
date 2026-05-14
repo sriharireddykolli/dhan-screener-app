@@ -21,7 +21,7 @@ def get_stock_data():
     }
     
     payload = {
-        "NSE_EQ": ["1333", "11536", "2885"] 
+        "NSE_EQ": [1333, 11536, 2885] 
     } 
     
     response = requests.post(url, json=payload, headers=headers)
