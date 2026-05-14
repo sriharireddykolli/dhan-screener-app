@@ -14,8 +14,8 @@ ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"
 def get_stock_data():
     url = "https://api.dhan.co/marketfeed/ltp" # This is the "phone number" for Dhan
     headers = {
-        "access-token": ACCESS_TOKEN,
-        "client-id": CLIENT_ID,
+        "access-token": eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzc4ODE2MzQwLCJpYXQiOjE3Nzg3Mjk5NDAsInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTAwNTEzOTU1In0.snVapdkFsnefdng8tjc3e8eUtRggm0eyJsj60eZyQj6rkal7ZN7RIgJVwuDXxM-tYzt2GFG6QvOuFWjidngK1w,
+        "client-id": 1100513955,
         "Content-Type": "application/json"
     }
     
