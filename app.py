@@ -6,16 +6,16 @@ st.title("📈 My Simple Stock Screener")
 st.write("Fetching live data from Dhan API...")
 
 # PASTE YOUR KEYS BETWEEN THE QUOTES
-CLIENT_ID = "YOUR_CLIENT_ID"
-ACCESS_TOKEN = "YOUR_ACCESS_TOKEN"
+CLIENT_ID = "1100513955"
+ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzc4ODE2MzQwLCJpYXQiOjE3Nzg3Mjk5NDAsInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTAwNTEzOTU1In0.snVapdkFsnefdng8tjc3e8eUtRggm0eyJsj60eZyQj6rkal7ZN7RIgJVwuDXxM-tYzt2GFG6QvOuFWjidngK1w"
 
 def get_stock_data():
     # 1. Notice the 'v2' added to the URL here
     url = "https://api.dhan.co/v2/marketfeed/ltp"
     
     headers = {
-        "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzc4ODE2MzQwLCJpYXQiOjE3Nzg3Mjk5NDAsInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTAwNTEzOTU1In0.snVapdkFsnefdng8tjc3e8eUtRggm0eyJsj60eZyQj6rkal7ZN7RIgJVwuDXxM-tYzt2GFG6QvOuFWjidngK1w": ACCESS_TOKEN,
-        "1100513955": CLIENT_ID,
+        "access-token": ACCESS_TOKEN,
+        "client-id": CLIENT_ID,
         "Content-Type": "application/json",
         "Accept": "application/json"
     }
