@@ -11,7 +11,7 @@ ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5
 
 def get_stock_data():
     if st.button('Refresh Prices'):
-    result = get_stock_data()
+        result = get_stock_data()
     
     if "error" in result:
         st.error("Connection Error")
