@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
 import requests
-import time # We need this for our timer!
+import time
 
 st.set_page_config(layout="wide")
-st.title("🚀 My ScanX Clone (Nifty 50 Edition)")
-st.write("Scanning the top 50 companies in India in real-time.")
+st.title("🚀 My ScanX Clone (Pro Dashboard)")
 
 # --- 1. YOUR SECRET KEYS ---
 CLIENT_ID = "1100513955"
@@ -40,16 +39,15 @@ def get_scanx_data():
     response = requests.post(url, json=payload, headers=headers)
     return response.json() if response.status_code == 200 else None
 
-
-# --- 4. THE SCANX SIDEBAR ---
+# --- 4. THE LIVE TICKER SIDEBAR ---
 st.sidebar.header("⚙️ Scanner Settings")
 
-# This is our new "Live TV" switch!
-auto_refresh = st.sidebar.checkbox("🟢 Enable Live Auto-Refresh (1s)")
+# I set this to True so the "Live Ticks" start automatically!
+# I also lowered the timer to 3 seconds so it feels faster.
+auto_refresh = st.sidebar.checkbox("🟢 Enable Live Auto-Refresh (1s)", value=True)
 min_move = st.sidebar.slider("Show stocks up more than (%):", -5.0, 5.0, 0.0)
 
-
-# --- 5. FETCHING THE DATA ---
+# --- 5. FETCHING AND ORGANIZING DATA ---
 result = get_scanx_data()
 
 if result and "data" in result:
@@ -59,49 +57,65 @@ if result and "data" in result:
     for stock_id_str, details in raw_data.items():
         stock_id = int(stock_id_str)
         
-        # 1. Grab the Last Traded Price
         ltp = details.get('last_price', 0)
-        
-        # 2. THE FIX: Open the 'ohlc' folder!
         ohlc = details.get('ohlc', {})
         
-        # 3. Pull the specific prices out of that folder safely
         open_p = ohlc.get('open', 0)
-        prev_close = ohlc.get('close', 0)
         high_p = ohlc.get('high', 0)
         low_p = ohlc.get('low', 0)
+        prev_close = ohlc.get('close', 0)
         
-        change = ((ltp - prev_close) / prev_close) * 100 if prev_close != 0 else 0
+        # NOTE: Volume might show 0 depending on if Dhan includes it in this specific OHLC link.
+        volume = details.get('volume', 0) 
         
+        # New Math: Calculating both absolute change and percentage change
+        chng = ltp - prev_close
+        pct_chng = (chng / prev_close) * 100 if prev_close != 0 else 0
+        
+        # Renamed to perfectly match your screenshot
         rows.append({
-            "Stock": NIFTY_50.get(stock_id, stock_id_str),
-            "Prev. Close": prev_close,
-            "Today's Open": open_p,
-            "Day High": high_p,
-            "Day Low": low_p,
-            "LTP (Current)": ltp,
-            "Change %": round(change, 2)
+            "SYMBOL": NIFTY_50.get(stock_id, stock_id_str),
+            "OPEN": open_p,
+            "HIGH": high_p,
+            "LOW": low_p,
+            "PREV. CLOSE": prev_close,
+            "LTP": ltp,
+            "CHNG": round(chng, 2),
+            "%CHNG": round(pct_chng, 2),
+            "VOLUME (shares)": volume
         })
     
     df = pd.DataFrame(rows)
 
+    # Filter based on your slider
+    filtered_df = df[df['%CHNG'] >= min_move]
+
+    # --- 6. THE BEAUTY PARLOR (Formatting exactly like Excel) ---
     def color_picker(val):
         color = 'green' if val > 0 else 'red' if val < 0 else 'black'
         return f'color: {color}; font-weight: bold'
 
-    # Filter the table based on your slider
-    filtered_df = df[df['Change %'] >= min_move]
+    # This forces Streamlit to add two decimal places and commas to the numbers
+    format_rules = {
+        "OPEN": "{:.2f}",
+        "HIGH": "{:.2f}",
+        "LOW": "{:.2f}",
+        "PREV. CLOSE": "{:.2f}",
+        "LTP": "{:.2f}",
+        "CHNG": "{:.2f}",
+        "%CHNG": "{:.2f}",
+        "VOLUME (shares)": "{:,}" # The comma formats millions perfectly!
+    }
+
+    # Apply colors ONLY to the CHNG and %CHNG columns, and format the numbers
+    styled_df = filtered_df.style.map(color_picker, subset=['CHNG', '%CHNG']).format(format_rules)
     
-    # Apply colors
-    styled_df = filtered_df.style.map(color_picker, subset=['Change %'])
-    
-    # Show the table
-    st.dataframe(styled_df, use_container_width=True, height=600)
+    # Hide the index (row numbers) to make it look exactly like your screenshot
+    st.dataframe(styled_df, use_container_width=True, height=750, hide_index=True)
 else:
     st.error("Could not fetch data from Dhan. Please check your Token!")
 
-# --- 6. THE LIVE REFRESH MAGIC ---
-# If you turned the switch on, wait 5 seconds, then erase the board and run everything again automatically!
+# --- 7. THE LIVE REFRESH MAGIC ---
 if auto_refresh:
-    time.sleep(5)
+    time.sleep(3)
     st.rerun()
