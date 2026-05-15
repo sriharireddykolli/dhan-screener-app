@@ -7,7 +7,7 @@ st.set_page_config(layout="wide")
 st.title("🚀 My ScanX Clone (Pro Dashboard)")
 
 # --- 1. YOUR SECRET KEYS ---
-CLIENT_ID = "1100513955"
+CLIENT_ID = "YOUR_CLIENT_ID"
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzc4ODQwMjE4LCJpYXQiOjE3Nzg3NTM4MTgsInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTAwNTEzOTU1In0.TPkPSA880q6Pu0IG9nHQ9bDzav_30ixNlX1t2-x7PDUFUntiEHn6NiOdBRtxKIPkWBFc82_Obf0sBbXdzJPa7A"
 
 # --- 2. THE NIFTY 50 DICTIONARY ---
@@ -26,9 +26,10 @@ NIFTY_50 = {
     5258: "INDUSINDBK", 467: "HDFCLIFE", 21808: "SBILIFE", 526: "BPCL"
 }
 
-# --- 3. THE BRAIN ---
+# --- 3. THE BRAIN (Upgraded to Quote API) ---
 def get_scanx_data():
-    url = "https://api.dhan.co/v2/marketfeed/ohlc"
+    # We upgraded the URL from 'ohlc' to 'quote' to make sure we get Volume data!
+    url = "https://api.dhan.co/v2/marketfeed/quote"
     headers = {
         "access-token": ACCESS_TOKEN,
         "client-id": CLIENT_ID,
@@ -42,10 +43,11 @@ def get_scanx_data():
 # --- 4. THE LIVE TICKER SIDEBAR ---
 st.sidebar.header("⚙️ Scanner Settings")
 
-# I set this to True so the "Live Ticks" start automatically!
-# I also lowered the timer to 3 seconds so it feels faster.
-auto_refresh = st.sidebar.checkbox("🟢 Enable Live Auto-Refresh (1s)", value=True)
-min_move = st.sidebar.slider("Show stocks up more than (%):", -5.0, 5.0, 0.0)
+auto_refresh = st.sidebar.checkbox("🟢 Enable Live Auto-Refresh (3s)", value=True)
+
+# THE FIX FOR THE 27 STOCKS: 
+# Changed the default starting value from 0.0 to -10.0 so it shows ALL stocks by default!
+min_move = st.sidebar.slider("Show stocks up more than (%):", -10.0, 10.0, -10.0)
 
 # --- 5. FETCHING AND ORGANIZING DATA ---
 result = get_scanx_data()
@@ -58,21 +60,21 @@ if result and "data" in result:
         stock_id = int(stock_id_str)
         
         ltp = details.get('last_price', 0)
-        ohlc = details.get('ohlc', {})
         
-        open_p = ohlc.get('open', 0)
-        high_p = ohlc.get('high', 0)
-        low_p = ohlc.get('low', 0)
-        prev_close = ohlc.get('close', 0)
+        # Safe reading: sometimes API puts OHLC in a sub-folder, sometimes it doesn't
+        ohlc = details.get('ohlc', details) 
         
-        # NOTE: Volume might show 0 depending on if Dhan includes it in this specific OHLC link.
+        open_p = ohlc.get('open', details.get('open', 0))
+        high_p = ohlc.get('high', details.get('high', 0))
+        low_p = ohlc.get('low', details.get('low', 0))
+        prev_close = ohlc.get('close', details.get('close', 0))
+        
+        # Now safely grabbing Volume!
         volume = details.get('volume', 0) 
         
-        # New Math: Calculating both absolute change and percentage change
         chng = ltp - prev_close
         pct_chng = (chng / prev_close) * 100 if prev_close != 0 else 0
         
-        # Renamed to perfectly match your screenshot
         rows.append({
             "SYMBOL": NIFTY_50.get(stock_id, stock_id_str),
             "OPEN": open_p,
@@ -86,16 +88,13 @@ if result and "data" in result:
         })
     
     df = pd.DataFrame(rows)
-
-    # Filter based on your slider
     filtered_df = df[df['%CHNG'] >= min_move]
 
-    # --- 6. THE BEAUTY PARLOR (Formatting exactly like Excel) ---
+    # --- 6. THE BEAUTY PARLOR ---
     def color_picker(val):
         color = 'green' if val > 0 else 'red' if val < 0 else 'black'
         return f'color: {color}; font-weight: bold'
 
-    # This forces Streamlit to add two decimal places and commas to the numbers
     format_rules = {
         "OPEN": "{:.2f}",
         "HIGH": "{:.2f}",
@@ -104,18 +103,15 @@ if result and "data" in result:
         "LTP": "{:.2f}",
         "CHNG": "{:.2f}",
         "%CHNG": "{:.2f}",
-        "VOLUME (shares)": "{:,}" # The comma formats millions perfectly!
+        "VOLUME (shares)": "{:,.0f}" # Adds commas to Volume!
     }
 
-    # Apply colors ONLY to the CHNG and %CHNG columns, and format the numbers
     styled_df = filtered_df.style.map(color_picker, subset=['CHNG', '%CHNG']).format(format_rules)
-    
-    # Hide the index (row numbers) to make it look exactly like your screenshot
     st.dataframe(styled_df, use_container_width=True, height=750, hide_index=True)
 else:
     st.error("Could not fetch data from Dhan. Please check your Token!")
 
-# --- 7. THE LIVE REFRESH MAGIC ---
+# --- 7. LIVE TICK MAGIC ---
 if auto_refresh:
     time.sleep(3)
     st.rerun()
