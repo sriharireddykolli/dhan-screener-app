@@ -43,7 +43,7 @@ def get_scanx_data():
 # --- 4. THE LIVE TICKER SIDEBAR ---
 st.sidebar.header("⚙️ Scanner Settings")
 
-auto_refresh = st.sidebar.checkbox("🟢 Enable Live Auto-Refresh (3s)", value=True)
+auto_refresh = st.sidebar.checkbox("🟢 Enable Live Auto-Refresh (1s)", value=True)
 
 # THE FIX FOR THE 27 STOCKS: 
 # Changed the default starting value from 0.0 to -10.0 so it shows ALL stocks by default!
