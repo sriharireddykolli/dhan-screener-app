@@ -87,7 +87,7 @@ if st.session_state['my_data'] is not None:
         color = 'green' if val > 0 else 'red' if val < 0 else 'black'
         return f'color: {color}; font-weight: bold'
 
-    styled_df = df.style.applymap(color_picker, subset=['Change %'])
+    styled_df = df.style.map(color_picker, subset=['Change %'])
 
     st.divider()
     
