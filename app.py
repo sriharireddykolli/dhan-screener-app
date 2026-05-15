@@ -7,7 +7,7 @@ st.set_page_config(layout="wide")
 st.title("🚀 My ScanX Clone (Pro Dashboard)")
 
 # --- 1. YOUR SECRET KEYS ---
-CLIENT_ID = "YOUR_CLIENT_ID"
+CLIENT_ID = "1100513955"
 ACCESS_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJkaGFuIiwicGFydG5lcklkIjoiIiwiZXhwIjoxNzc4ODQwMjE4LCJpYXQiOjE3Nzg3NTM4MTgsInRva2VuQ29uc3VtZXJUeXBlIjoiU0VMRiIsIndlYmhvb2tVcmwiOiIiLCJkaGFuQ2xpZW50SWQiOiIxMTAwNTEzOTU1In0.TPkPSA880q6Pu0IG9nHQ9bDzav_30ixNlX1t2-x7PDUFUntiEHn6NiOdBRtxKIPkWBFc82_Obf0sBbXdzJPa7A"
 
 # --- 2. THE NIFTY 50 DICTIONARY ---
