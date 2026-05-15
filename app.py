@@ -45,7 +45,7 @@ def get_scanx_data():
 st.sidebar.header("⚙️ Scanner Settings")
 
 # This is our new "Live TV" switch!
-auto_refresh = st.sidebar.checkbox("🟢 Enable Live Auto-Refresh (5s)")
+auto_refresh = st.sidebar.checkbox("🟢 Enable Live Auto-Refresh (1s)")
 min_move = st.sidebar.slider("Show stocks up more than (%):", -5.0, 5.0, 0.0)
 
 
